@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>midi midi midi</title>
+</head>
+<body>
+    <canvas id="midi-canvas"></canvas>
+    <div id="top-area">
+        <textarea id="input-dark" oninput="updateBytebeatInput()" autocorrect="off" autocomplete="none" spellcheck="false">t%256>128?-1-2*t:2*t</textarea>
+        <button id="increase-code-window" onclick="codeWindowButton()">+</button>
+        <canvas id="wave-canvas" height="100"></canvas>
+        <p id="error" style="font-family:Consolas;color:red"></p>
+    </div>
+    <div id="popup" class="popup">
+        <p id="popup-text">whatever setting you're changing is not gonna work</p>
+    </div>
+    <div id="audio-popup" class="popup">
+        <p id="popup-text">you need to click or press a key so the web audio api can do its thing</p>
+    </div>
+    <script src="main.js"></script>
+    <script src="wave.js"></script>
+</body>
+</html>

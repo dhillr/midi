@@ -1,0 +1,61 @@
+* {
+    font-family: SF Pro Display;
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+}
+
+.popup {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(50%, 50%, 50%, 25%);
+    backdrop-filter: blur(10px);
+    box-shadow: 0em 0em 2em rgb(0, 0, 0, 15%);
+    border-radius: 10px;
+    padding: 40px 80px;
+    opacity: 100%;
+}
+
+#top-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#increase-code-window {
+    position: fixed;
+    top: -5px;
+    padding: 0px 5px;
+    background: none;
+    border: none;
+    color: white;
+    left: calc(100vw - 25px);
+    font-size: 1.5em;
+}
+
+#increase-code-window:hover {
+    background: rgb(100%, 100%, 100%, 25%);
+}
+
+#popup-text {
+    text-align: center;
+    font-size: 2em;
+}
+
+#input-dark {
+    font-family: Consolas;
+    background-color: rgb(10% 10% 20%);
+    color: white;
+    border-style: none;
+    padding: 5px;
+    width: calc(100vw - 10px);
+    resize: none;
+    overflow: auto;
+    scrollbar-color: grey transparent;
+}
