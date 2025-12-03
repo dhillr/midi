@@ -20,6 +20,5 @@ setInterval(() => {
         waveCtx.fillRect(i * waveScale, 100 - (eval(bytebeatInput) & 0xFF) / 2.56, 1, 1);
     }
 
-
     globalT += 1024;
 }, 1000 / (audioCtx.sampleRate / 1024));
