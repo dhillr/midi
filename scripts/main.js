@@ -49,6 +49,7 @@ function updateBytebeatInput() {
     }
 
     bytebeatInput = bytebeatInputElem.value;
+    bytebeatNode.port.postMessage({keys: keys, bytebeatInput: bytebeatInput});
 
     try {
         let t;
@@ -114,6 +115,16 @@ function genBufferRefillFunction(bufferSrc, note, gain, offset=audioCtx.sampleRa
         setTimeout(genBufferRefillFunction(srcBuf, note, gain, offset + audioCtx.sampleRate), bufferWaitTime);
     };
 }
+
+let bytebeatNode;
+(async () => {
+    await audioCtx.audioWorklet.addModule("scripts/bytebeat_processor.js");
+    bytebeatNode = new AudioWorkletNode(audioCtx, "bp", {});
+
+    bytebeatNode.port.postMessage({keys: keys, bytebeatInput: bytebeatInput});
+
+    bytebeatNode.connect(audioCtx.destination);
+})();
 
 audioCtxUsable();
 
@@ -185,16 +196,8 @@ function onMidiConnect(access) {
                     if (e.data[2])
                         gain = 0.005 * e.data[2];
 
-                    let srcBuf = genBytebeatBuffer(note, gain, 0);
-                    
-                    srcBuf.connect(audioCtx.destination);
-                    srcBuf.start();
-                    
-                    buffers.push(srcBuf);
-
-                    setTimeout(genBufferRefillFunction(srcBuf, note, gain), bufferWaitTime);
-
                     notes.push([vec2(e.data[1], 0.9 * height), frames, undefined]);
+                    bytebeatNode.port.postMessage({keys: keys});
                 } else {
                     let lastNote = notes.filter(elem_e => (elem_e[0].x == e.data[1] && !elem_e[2]));
                     let lastNoteIndex = notes.indexOf(lastNote[0]);
@@ -204,9 +207,8 @@ function onMidiConnect(access) {
 
                     let index = keys.indexOf(note);
                     keys.splice(index, 1);
-                    
-                    buffers[index].stop();
-                    buffers.splice(index, 1);
+
+                    bytebeatNode.port.postMessage({keys: keys});
                 }
             }
         };
