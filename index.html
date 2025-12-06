@@ -9,8 +9,11 @@
 <body>
     <canvas id="midi-canvas"></canvas>
     <div id="top-area">
-        <textarea id="input-dark" oninput="updateBytebeatInput()" autocorrect="off" autocomplete="none" spellcheck="false">t%256>128?-1-2*t:2*t</textarea>
-        <button id="increase-code-window" onclick="codeWindowButton()">+</button>
+        <div id="code-input">
+            <textarea class="input" id="input-dark" rows="1" oninput="updateBytebeatInput()" autocorrect="off" autocomplete="none" spellcheck="false">t%256>128?-1-2*t:2*t</textarea>
+            <button id="increase-code-window" onclick="codeWindowButton()">+</button>
+        </div>
+        <textarea class="input" id="input-effect" rows="10" oninput="updateBytebeatInput()" autocorrect="off" autocomplete="none" spellcheck="false">&NewLine;&NewLine;&NewLine;// f(t) is the bytebeat&NewLine;function effect0() {&NewLine;&Tab;return f(t);&NewLine;}</textarea>
         <canvas id="wave-canvas" height="100"></canvas>
         <p id="error" style="font-family:Consolas;color:red"></p>
     </div>

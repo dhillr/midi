@@ -31,11 +31,11 @@
 #increase-code-window {
     position: fixed;
     top: -5px;
+    right: 0px;
     padding: 0px 5px;
     background: none;
     border: none;
     color: white;
-    left: calc(100vw - 25px);
     font-size: 1.5em;
 }
 
@@ -49,13 +49,22 @@
 }
 
 #input-dark {
-    font-family: Consolas;
     background-color: rgb(10% 10% 20%);
+    scrollbar-color: grey transparent;
+}
+
+#input-effect {
+    background-color: rgb(50% 10% 20%);
+    scrollbar-color: white transparent;
+}
+
+.input {
+    font-family: Consolas;
     color: white;
     border-style: none;
     padding: 5px;
     width: calc(100vw - 10px);
     resize: none;
     overflow: auto;
-    scrollbar-color: grey transparent;
+    
 }

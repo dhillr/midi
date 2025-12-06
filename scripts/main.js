@@ -11,7 +11,7 @@ let audioCtx = new (window.AudioContext || window.webkitAudioContext)({sampleRat
 let gainNode = audioCtx.createGain();
 
 let keys = [];
-let buffers = [];
+let gains = [];
 
 let canvas = document.getElementById("midi-canvas");
 let ctx = canvas.getContext("2d");
@@ -24,6 +24,8 @@ let increaseCodeWindowElem = document.getElementById("increase-code-window");
 
 let bytebeatInput = "";
 bytebeatInput = bytebeatInputElem.value;
+
+let effectInputs = [];
 
 let frames = 0;
 let popupOpacity = 0;
@@ -49,12 +51,12 @@ function updateBytebeatInput() {
     }
 
     bytebeatInput = bytebeatInputElem.value;
-    bytebeatNode.port.postMessage({keys: keys, bytebeatInput: bytebeatInput});
-
+    
     try {
         let t;
         eval(bytebeatInput);
         errorElem.innerHTML = "";
+        bytebeatNode.port.postMessage({bytebeatInput: bytebeatInput});
     } catch (e) {
         errorElem.innerHTML = e;
     }
@@ -85,43 +87,12 @@ function audioCtxUsable() {
         removeAudioPopup();
 }
 
-function genBytebeatBuffer(note, gain, timeOffset) {
-    let res = audioCtx.createBufferSource();
-    let buf = audioCtx.createBuffer(1, audioCtx.sampleRate, audioCtx.sampleRate);
-    let chan = buf.getChannelData(0);
-
-    for (let i = 0; i < audioCtx.sampleRate; i++) {
-        let t = Math.pow(2, note / 12) * (i + timeOffset) / (audioCtx.sampleRate / 256) * 440;
-        chan[i] = gain * ((eval(bytebeatInput) & 0xFF) / 128 - 1);
-    }
-
-    res.buffer = buf;
-    return res;
-}
-
-function genBufferRefillFunction(bufferSrc, note, gain, offset=audioCtx.sampleRate) {
-    return () => {
-        let bufferIndex = buffers.indexOf(bufferSrc);
-        if (bufferIndex < 0) return;
-
-        let time = Date.now();
-        let srcBuf = genBytebeatBuffer(note, gain, offset);
-        srcBuf.connect(audioCtx.destination);
-        srcBuf.start();
-        let dt = Date.now() - time;
-
-        buffers[bufferIndex] = srcBuf;
-
-        setTimeout(genBufferRefillFunction(srcBuf, note, gain, offset + audioCtx.sampleRate), bufferWaitTime);
-    };
-}
-
 let bytebeatNode;
 (async () => {
     await audioCtx.audioWorklet.addModule("scripts/bytebeat_processor.js");
     bytebeatNode = new AudioWorkletNode(audioCtx, "bp", {});
 
-    bytebeatNode.port.postMessage({keys: keys, bytebeatInput: bytebeatInput});
+    bytebeatNode.port.postMessage({bytebeatInput: bytebeatInput});
 
     bytebeatNode.connect(audioCtx.destination);
 })();
@@ -190,14 +161,16 @@ function onMidiConnect(access) {
                 popupOpacity = 1;
             } else {
                 if (e.data[0] & 0b10000) {
-                    keys.push(note);
                     let gain = 1;
 
                     if (e.data[2])
                         gain = 0.005 * e.data[2];
 
+                    keys.push(note);
+                    gains.push(gain);
+
                     notes.push([vec2(e.data[1], 0.9 * height), frames, undefined]);
-                    bytebeatNode.port.postMessage({keys: keys});
+                    bytebeatNode.port.postMessage({keys: keys, gains: gains});
                 } else {
                     let lastNote = notes.filter(elem_e => (elem_e[0].x == e.data[1] && !elem_e[2]));
                     let lastNoteIndex = notes.indexOf(lastNote[0]);
@@ -207,8 +180,9 @@ function onMidiConnect(access) {
 
                     let index = keys.indexOf(note);
                     keys.splice(index, 1);
+                    gains.splice(index, 1);
 
-                    bytebeatNode.port.postMessage({keys: keys});
+                    bytebeatNode.port.postMessage({keys: keys, gains: gains});
                 }
             }
         };

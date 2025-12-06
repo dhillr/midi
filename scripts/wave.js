@@ -17,7 +17,7 @@ setInterval(() => {
     for (let i = 0; i < 1024; i++) {
         let t = globalT + i;
         waveCtx.fillStyle = "white";
-        waveCtx.fillRect(i * waveScale, 100 - (eval(bytebeatInput) & 0xFF) / 2.56, 1, 1);
+        waveCtx.fillRect(i * waveScale, 100 - (eval(bytebeatInput) & 0xFF) / 2.56, waveScale, 1);
     }
 
     globalT += 1024;
